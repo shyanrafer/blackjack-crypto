@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <!-- Basic Page Needs
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta charset="utf-8">
+  <title>Blackjack Prototyping</title>
+  <meta name="description" content="Blackjack Prototyping">
+  <meta name="author" content="Me!">
+
+  <!-- Mobile Specific Metas
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- FONT
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+
+  <!-- CSS
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link rel="stylesheet" href="assets/css/normalize.css">
+  <link rel="stylesheet" href="assets/css/skeleton.css">
+  <link rel="stylesheet" href="assets/css/style.css">
+
+  <!-- Favicon
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link rel="icon" type="image/png" href="images/favicon.png">
+
+</head>
+<body>
+
+  <!-- Primary Page Layout
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <div class="container" class="twelve columns">
+    
+    <div class="row twelve columns">
+    <h2>Blackjack Prototyping</h2>
+    </div>
+    <form id="black-jack-form">
+      <button class="button-primary" id="new-deck-button" type="submit" value="Get New Deck">Get New Deck</button>
+      <button class="button-primary" id="draw-two-cards-button" type="submit" value="Draw Two Cards">Draw Two Cards For Both</button>
+      <button class="button-primary" id="draw-a-card-button" type="submit" value="Draw A Card">Draw A Card</button>
+      <button class="button-primary" id="render-cards-button" type="submit" value="Render Cards">Render Cards</button>
+      <button class="button-primary" id="crypto-values-button" type="submit" value="Get BTC Values">Get BTC Values</button>
+  </form>
+    
+    <div class="container" class="twelve columns" style="margin-top: 5%">
+      <div class="row six columns" id="dealer-cards-container"></div>
+      <div class="row six columns" id="player-cards-container"></div>
+    </div>
+  
+  </div>
+
+<!-- End Document
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+</body>
+<script src="assets/js/script.js"></script>
+</html>
