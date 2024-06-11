@@ -1,0 +1,34 @@
+* {
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+
+body {
+  background-color: antiquewhite;
+}
+
+h1 {
+  text-align: center;
+  height: 50px;
+  border-bottom: solid 1px green;
+}
+
+#content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 80vh;
+}
+
+#play-submit-div {
+  border: solid 1px green;
+  height: 250px;
+  width: 250px;
+  align-content: center;
+  text-align: center;
+  
+}
+
+#submit-play-btn {
+  border: solid 2px green;
+  cursor: pointer;
+}
