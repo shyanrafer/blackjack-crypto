@@ -1,34 +1,128 @@
 * {
   font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  padding: 0;
+  margin: 0;
 }
 
 body {
   background-color: antiquewhite;
 }
 
-h1 {
+header {
+  border-bottom: solid 2px green;
+  height: 80px;
   text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+h1 {
   height: 50px;
-  border-bottom: solid 1px green;
+}
+  
+button {
+  background-color: antiquewhite;
+  border: none;
+}
+    
+button a {
+  text-decoration: none;
+  color: black;
+}
+
+#play-submit-div h2 {
+  margin-bottom: 10px;
 }
 
 #content {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   height: 80vh;
 }
 
 #play-submit-div {
-  border: solid 1px green;
+  border: solid 2px green;
   height: 250px;
   width: 250px;
   align-content: center;
   text-align: center;
-  
 }
 
 #submit-play-btn {
+  border: none;
+  width: 120px;
+  height: 40px;
+}
+
+#info-form-container {
+  max-height: 500px;
+  max-width: 100%;
+}
+
+#info-form-container {
+  text-align: center;
+}
+
+#form-div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+  
+#info-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-height: 500px;  
+  width: 500px;
+  background-color: white;
   border: solid 2px green;
+  z-index: 100;
+  padding: 22px;
+}
+
+button:hover {
+  background-color: green;
+  color: white;
   cursor: pointer;
+}
+
+.shimmer {
+  display: inline-block;
+  background: linear-gradient(
+      -45deg,
+      rgba(255, 255, 255, 0.2) 25%,
+      rgba(255, 255, 255, 0.5) 50%,
+      rgba(255, 255, 255, 0.2) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 3s infinite;
+  padding: 0.2em 0.4em; /* padding */
+}
+
+@keyframes shimmer {
+  0% {
+      background-position: -100% 0;
+  }
+  100% {
+      background-position: 100% 0;
+  }
+}
+
+.visible {
+  opacity: 1;
+  max-height: 500px;
+  max-width: 70%;
+  transition: opacity 0.5s ease, max-height 0.5s ease; 
+}
+
+.invisible {
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: opacity 0.5s ease, max-height 0.5s ease;
 }
