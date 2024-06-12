@@ -2,23 +2,18 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="./gamepage.css" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.0/css/bulma.min.css" />
-  <title>Blackjack with Crypto</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="assets/css/gamepage.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.0/css/bulma.min.css" />
+    <title>Blackjack with Crypto</title>
 
 </head>
 
-<body>
-  <header class="title">
-    <h1>Black Jack</h1>
-  </header>
-
-
-  <!--Use moda for the start of the game -->
-  <!--TODO: Add trigger to modal to close upon clicking buttons-->
-  <!-- <div class="modal is-active">
+<body class="is-flex is-flex-direction-row is-justify-content-space-between mx-3">
+    <!--Use modal for the start of the game -->
+    <!--TODO: Add trigger to modal to close upon clicking buttons-->
+    <!-- <div class="modal is-active">
     <div class="modal-background"></div>
     <div class="modal-card">
       <header class="modal-card-head">
@@ -30,79 +25,86 @@
       </section>
       <footer class="modal-card-foot">
         <div class="buttons">
-          <button class="button">$10</button>
-          <button class="button">$50</button>
-          <button class="button">$100</button>
-          <button class="button">$500</button>
+          
         </div>
       </footer>
     </div>
   </div> -->
 
-  <!-- TODO: adding spacing to the cards -->
-  <!-- Computer cards -->
-  <div class="columns is-centered">
-    <div class="columns is-half">
-      <div class="card">
-        <div class="card-image">
-          <figure>
-            <img class="image is-2by3" src="https://www.deckofcardsapi.com/static/img/back.png"
-              alt="Placeholder image" />
-          </figure>
+    <!--Money and Button tab-->
+    <aside class="mt-3">
+        <div class="card">
+            <div class="card-content">
+                <div class="content">
+                    <p class="title">Balance: $1000</p>
+                    <form>
+                        <button class="button">$10</button>
+                        <button class="button">$50</button>
+                        <button class="button">$100</button>
+                        <button class="button">$500</button>
+                    </form>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  </div>
 
 
-  <!--Deck cards-->
-  <div class="columns is-centered">
-    <div class="columns is-half">
-      <div class="card">
-        <div class="card-image">
-          <figure>
-            <img class="image is-2by3" src="https://www.deckofcardsapi.com/static/img/back.png"
-              alt="Placeholder image" />
-          </figure>
+
+        <div class="card">
+            <div class="card-content">
+                <div class="content">
+                    <p class="title">Choose one of below:</p>
+                    <form>
+                        <button class="button">Stand</button>
+                        <button id="draw-a-card-button" class="button">Hit</button>
+                        <button class="button">x2</button>
+                    </form>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  </div>
 
-  <!-- User cards -->
-  <div class="columns is-centered">
-    <div class="columns is-half">
-      <div class="card">
-        <div class="card-image">
-          <figure>
-            <img class="image is-2by3" src="https://www.deckofcardsapi.com/static/img/back.png"
-              alt="Placeholder image" />
-          </figure>
+
+    </aside>
+
+
+    <section>
+        <!-- TODO: adding spacing to the cards -->
+        <!-- Computer cards -->
+        <div class="is-centered playing-cards">
+            <div class="card">
+                <div class="card-image">
+                    <figure>
+                        <div id="dealer-cards-container">
+                            <!--Example, TODO: remove once implemented.-->
+                            <h2>Dealer Cards: 20</h2>
+                            <img src=https://deckofcardsapi.com/static/img/0H.png>
+                            <img src=https://deckofcardsapi.com/static/img/QH.png>
+                        </div>
+                    </figure>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  </div>
 
-
-
-  <!--Money tab-->
-  <aside>
-    <!--TODO: Finish styling content and card size while also have the balance change-->
-    <div class="card">
-      <div class="card-content">
-        <div class="content">
-          <p class="title">Balance: $1000</p>
-          <p>Choose one of below:</p>
-          <form>
-            <button class="button">Stand</button>
-            <button class="button">Hit</button>
-            <button class="button">x2</button>
-          </form>
+        <!-- User cards -->
+        <div class="is-centered playing-cards">
+            <div class="card">
+                <div class="card-image">
+                    <figure>
+                        <div id="player-cards-container">
+                            <!--Example, TODO: remove once implemented.-->
+                            <h2>Player Cards: 12</h2>
+                            <img src=https://deckofcardsapi.com/static/img/5D.png>
+                            <img src=https://deckofcardsapi.com/static/img/7H.png>
+                        </div>
+                    </figure>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
+    </section>
 
-  </aside>
+
+
+
+
 
 </body>
 
