@@ -1,0 +1,27 @@
+body{
+    background-color: green;
+    background-image: url("https://static.vecteezy.com/system/resources/previews/024/232/274/non_2x/green-casino-poker-table-texture-game-background-free-vector.jpg");
+}
+
+aside{
+    margin-top: 25px;
+    margin-bottom: 25px;
+}
+
+body{
+    height: 100vh;
+}
+
+
+#dealer-cards-container img{
+    width: 150px;
+}
+
+#player-cards-container img{
+    width: 150px;
+}
+
+h2{
+    color: white;
+    font-weight: bold !important;
+}

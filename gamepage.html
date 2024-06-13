@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="assets/css/gamepage.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.0/css/bulma.min.css" />
+    <title>Blackjack with Crypto</title>
+
+</head>
+
+<body class="is-flex is-flex-direction-row is-justify-content-space-between">
+
+    <!--Money and Button tab-->
+    <aside class="is-flex is-flex-direction-column is-justify-content-space-between">
+        <div class="card mx-3">
+            <div class="card-content">
+                <div class="content">
+                    <p class="title">Balance: $1000</p>
+                    <form>
+                        <button class="button is-medium">$10</button>
+                        <button class="button is-medium">$50</button>
+                        <button class="button is-medium">$100</button>
+                        <button class="button is-medium">$500</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div class="card mx-3">
+            <div class="card-content">
+                <div class="content">
+                    <p class="title">Choose one of below:</p>
+                    <form>
+                        <button class="button is-medium">Stand</button>
+                        <button id="draw-a-card-button" class="button is-medium">Hit</button>
+                        <button class="button is-medium">x2</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+
+    </aside>
+
+
+    <section>
+        <!-- Computer cards -->
+        <div class="is-centered playing-cards mx-3 my-3">
+
+            <div id="dealer-cards-container" >
+                <!--Example, TODO: remove once implemented.-->
+                <h2>Dealer Cards: 20</h2>
+                <img src=https://deckofcardsapi.com/static/img/0H.png>
+                <img src=https://deckofcardsapi.com/static/img/QH.png>
+                <img src=https://deckofcardsapi.com/static/img/QH.png>
+                <img src=https://deckofcardsapi.com/static/img/QH.png>
+                <img src=https://deckofcardsapi.com/static/img/QH.png>
+            </div>
+
+
+        </div>
+
+        <!-- User cards -->
+        <div class="is-centered playing-cards mx-3 my-3">
+
+            <div id="player-cards-container">
+                <!--Example, TODO: remove once implemented.-->
+                <h2>Player Cards: 12</h2>
+                <img src=https://deckofcardsapi.com/static/img/5D.png>
+                <img src=https://deckofcardsapi.com/static/img/7H.png>
+            </div>
+
+        </div>
+    </section>
+
+</body>
+
+</html>
