@@ -1,26 +1,35 @@
 const playerCardsContainer = document.querySelector('#player-cards-container'); // Setting DOM variables
 const dealerCardsContainer = document.querySelector('#dealer-cards-container');
-const balanceContainer = document.querySelector('#balance-container');
+const balanceContainer = document.querySelector('#balance-wins-container');
 const playerWinsContainer = document.querySelector('#wins-container');
+const betContainer = document.querySelector('#bet-container');
+const betForm = document.querySelector('#bet-form');
+const playerActionContainer = document.querySelector('#player-action-container')
+const playerActionForm = document.querySelector('#player-action-form')
 const blackJackForm = document.querySelector('#black-jack-form');
 const hitButton = document.querySelector('#hit-button');
 const standButton = document.querySelector('#stand-button');
 const doubleDownButton = document.querySelector('#double-down-button');
 let currentDeck = "";
 let cardsDrawn = [];
+let entireDeck = [];
 let currentPlayerHand = [];
 let currentDealerHand = [];
 let currentPlayerHandValue = 0;
 let currentDealerHandValue = 0;
-let entireDeck = [];
-let btcValue = "";
-let playerBalance = "";
+let btcValue = 0;
+let playerBalance = 0;
 let playerWins = 0;
+let currentBet = 0;
 
-function getWinsAndBalanceFromStorage() { // Checks for an existing deck in localStorage and sets them to the working arrays if found
+function getDataFromStorage() { // Checks for an existing deck in localStorage and sets them to the working arrays if found
     const storedWins = localStorage.getItem('playerWins');
     if (storedWins !== null) {
         playerWins = storedWins;
+    }
+    const storedBTC = localStorage.getItem('currentBTCvalue');
+    if (storedBTC !== null) {
+        btcValue = storedBTC;
     }
     const storedBalance = localStorage.getItem('playerBalance');
     if (storedBalance !== null) {
@@ -33,27 +42,22 @@ function getWinsAndBalanceFromStorage() { // Checks for an existing deck in loca
 
 function renderBalanceAndWins(){
     let btcToUsd = 0;
-    btcToUsd = (playerBalance * btcValue);
+    btcToUsd = playerBalance * btcValue;
     balanceContainer.textContent = ''; // Emptying the container pre-rendering
-    balanceContainer.innerHTML += `<p>Balance in BTC: ${playerBalance}</p>`;
-    balanceContainer.innerHTML += `<p>Balance in USD: ${btcToUsd}</p>`;
-    playerWinsContainer.textContent = ''; // Emptying the container pre-rendering
-    playerWinsContainer.innerHTML += `<h2>You have won ${playerWins} times!</h2>`;
+    balanceContainer.innerHTML += `<p class="title">₿ Balance: ${playerBalance}</p>`;
+    balanceContainer.innerHTML += `<p class="title">Worth in USD: $${btcToUsd}</p>`;
+    balanceContainer.innerHTML += `<p class="title">You have won ${playerWins} times!</p>`;
 };
 
-function getDecksFromStorage() { // Checks for an existing deck in localStorage and sets them to the working arrays if found
-    const storedDeck = localStorage.getItem('currentDeck');
-    if (storedDeck !== null) {
-        currentDeck = storedDeck;
-    }
-    /* const storedPlayerHand = JSON.parse(localStorage.getItem('playerHand'));
-    if (storedPlayerHand !== null) {
-        currentPlayerHand = storedPlayerHand;
-    }
-    const storedDealerHand = JSON.parse(localStorage.getItem('dealerHand'));
-    if (storedDealerHand !== null) {
-        currentDealerHand = storedDealerHand;
-    } */
+function getEntireDeck(deck) { // Draws all 52 cards from the api using the currentDeck id
+    fetch(`https://deckofcardsapi.com/api/deck/${deck}/draw/?count=52`, { cache: "reload" })
+        .then(function (response) {
+            return response.json();
+        })
+        .then(function (data) {
+            entireDeck = data.cards;
+            initialCardDraw(2, "both");
+        });
     return;
 };
 
@@ -64,17 +68,7 @@ function getNewDeck() { // Gets the id of a new shuffled deck from the api
         })
         .then(function (data) {
             currentDeck = data.deck_id;
-        });
-    return;
-}
-
-function getEntireDeck() { // Draws all 52 cards from the api using the currentDeck id
-    fetch(`https://deckofcardsapi.com/api/deck/${currentDeck}/draw/?count=52`, { cache: "reload" })
-        .then(function (response) {
-            return response.json();
-        })
-        .then(function (data) {
-            entireDeck = data.cards;
+            getEntireDeck(currentDeck);
         });
     return;
 };
@@ -94,44 +88,25 @@ function getCryptoValues() { // Queries the api for the current value of BTC in 
 function prepNewGame() { // Wipes out any current hands to prepare for a new game
     currentPlayerHand = [];
     currentDealerHand = [];
-    localStorage.setItem('playerHand', "");
-    localStorage.setItem('dealerHand', "");
 };
 
 function drawCards(numOfCards, targetHand) { // Draws a specified number of cards from the into the targets (player or dealer) hand
-            for (let i = 0; i < numOfCards; i++) {
-                if (targetHand == "both") {
-                    currentDealerHand.push(entireDeck.shift);
-                    currentPlayerHand.push(entireDeck.shift);
-                } 
-                if (targetHand == "dealer") {
-                    currentDealerHand.push(entireDeck.shift);
+        for (let i = 0; i < numOfCards; i++) {
+            if (targetHand == "both") {
+                currentDealerHand.push(entireDeck.pop());
+                currentPlayerHand.push(entireDeck.pop());
+            } else if (targetHand == "dealer") {
+                console.log(currentDealerHand);
+                console.log(entireDeck);
+                currentDealerHand.push(entireDeck.pop());
                 } else {
-                    currentPlayerHand.push(entireDeck.shift);
+                    console.log(currentPlayerHand);
+                    console.log(entireDeck);
+                    currentPlayerHand.push(entireDeck.pop());
                 };
             };
-    return;
+        return;
 };
-
-/* function drawCards(numOfCards, targetHand) { // Draws a specified number of cards into the targets (player or dealer) hand
-    fetch(`https://deckofcardsapi.com/api/deck/${currentDeck}/draw/?count=${numOfCards}`, { cache: "reload" })
-        .then(function (response) {
-            return response.json();
-        })
-        .then(function (data) {
-            cardsDrawn = data.cards;
-            for (let i = 0; i < cardsDrawn.length; i++) {
-                if (targetHand === "dealer") {
-                    currentDealerHand.push(cardsDrawn[i]);
-                    localStorage.setItem('dealerHand', JSON.stringify(currentDealerHand)); // Stringifies the array of objects to local storage
-                } else {
-                    currentPlayerHand.push(cardsDrawn[i]);
-                    localStorage.setItem('playerHand', JSON.stringify(currentPlayerHand)); // Stringifies the array of objects to local storage
-                };
-            };
-        });
-    return;
-}; */
 
 function calculateHandsValue(){
     let dealerSum = 0;
@@ -179,8 +154,8 @@ function renderCards() {
     calculateHandsValue ();
     playerCardsContainer.textContent = ''; // Emptying the container pre-rendering
     dealerCardsContainer.textContent = '';
-    dealerCardsContainer.innerHTML += `<h2>Dealer Cards: ${currentDealerHandValue}</h2>`;
-    playerCardsContainer.innerHTML += `<h2>Player Cards: ${currentPlayerHandValue}</h2>`;
+    //dealerCardsContainer.innerHTML += `<h2>Dealer Cards: ${currentDealerHandValue}</h2>`;
+    //playerCardsContainer.innerHTML += `<h2>Player Cards: ${currentPlayerHandValue}</h2>`;
     //dealerCardsContainer.innerHTML += `<img src=https://deckofcardsapi.com/static/img/back.png>`;
     for (let i = 0; i < currentDealerHand.length; i++) {
         dealerCardsContainer.innerHTML += `<img src=${currentDealerHand[i].image}>`;
@@ -190,9 +165,12 @@ function renderCards() {
     };
 };
 
+function renderBet() {
+    betContainer.textContent = ''; // Emptying the container pre-rendering
+    betContainer.innerHTML += `<p class="title">Current Bet: ${currentBet}</p>`;
+};
+
 function checkWinCondition(){
-    console.log(currentDealerHandValue);
-    console.log(currentPlayerHandValue);
     if (currentPlayerHandValue > 21){
     return alert("RUGGED!");}
     else if (currentDealerHandValue === currentPlayerHandValue){
@@ -205,30 +183,52 @@ function checkWinCondition(){
         return alert("You win!");}
 };
 
+function declareWinner(){
+};
+
 function initialCardDraw(){
-    prepNewGame();
-    drawCards(2, "dealer");
-    drawCards(2, "player");
+    drawCards(2, "both");
+};
+
+function nextRound(){
+    renderCards();
+        while (currentDealerHandValue < 17)
+            {
+            drawCards(1, "dealer");
+            calculateHandsValue();
+            }
+    renderCards();    
+    checkWinCondition();
+    console.log(currentDealerHandValue);
+    console.log(currentPlayerHandValue);
 };
 
 function playNewGame(){
     renderCards();
-    checkWinCondition();
 }
 
-function takeBet(){
+getNewDeck();
+getCryptoValues();
+getDataFromStorage();
+renderBalanceAndWins();
 
-};
-
-hitButton.addEventListener('click', function(event) { // Listens for a click event on a button
+playerActionForm.addEventListener('click', function(event) { // Listens for a click event on a button
     event.preventDefault(); // Stops the page from refreshing on submit
-    drawCards(1, "player"); // Calls the function to draw a new deck
+    if (event.target.firstChild.data == "Hodl"){
+        return nextRound();
+    } else if (event.target.firstChild.data == "Buy the Dip"){ // Draws one card and adds it to the players hand
+        drawCards(1, "player");
+    } else if (event.target.firstChild.data == "To the Moon!"){  // Draws one card, adds it to the players hand and doubles the current bet
+        drawCards(1, "player");
+        currentBet * 2;
+    }
+    nextRound();
 });
 
-getNewDeck();
-//getCryptoValues();
-getBalanceFromStorage();
-// getDecksFromStorage(); // Init call to get the hands in storage if any exist
-
-
-//current crypto prices for popular coins listed on landing page
+betForm.addEventListener('click', function(event) { // Listens for a submit from the betting form
+    event.preventDefault(); // Stops the page from refreshing on submit
+    currentBet = event.target.firstChild.data; // Sets the initial bet
+    console.log("Current bet is " + currentBet);
+    playNewGame();
+    renderBet(event.target.firstChild.data);
+});
