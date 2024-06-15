@@ -16,9 +16,9 @@
     <aside class="is-flex is-flex-direction-column is-justify-content-space-between">
         <div class="card mx-3">
             <div class="card-content">
-                <div class="content">
-                    <p class="title">Balance: $1000</p>
-                    <p class="title">Score: 0</p>
+                <div class="content" id="balance-wins-container">
+                    <p class="title">Balance</p>
+                    <p class="title">Wins</p>
                 </div>
             </div>
         </div>
@@ -35,15 +35,29 @@
             </div>
         </div>
 
+        <div class="card mx-3">
+            <div class="card-content">
+                <div class="content" id="bet-container">
+                    <p class="title">Place your bet!</p>
+                    <form id="bet-form">
+                        <button type="submit" class="button is-medium" id="5-btc-button">5</button>
+                        <button type="submit" class="button is-medium" id="10-usd-button">10</button>
+                        <button type="submit" class="button is-medium" id="25-usd-button">25</button>
+                        <button type="submit" class="button is-medium" id="50-usd-button">50</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
 
         <div class="card mx-3">
             <div class="card-content">
-                <div class="content">
-                    <p class="title">Choose one of below:</p>
-                    <form>
-                        <button class="button is-medium">Stand</button>
-                        <button id="draw-a-card-button" class="button is-medium">Hit</button>
-                        <button class="button is-medium">x2</button>
+                <div class="content" id="player-action-container">
+                    <p class="title">Choose one:</p>
+                    <form id="player-action-form">
+                        <button class="button is-medium" id="stand-button">Hodl</button>
+                        <button class="button is-medium" id="hit-button">Buy the Dip</button>
+                        <button class="button is-medium" id="double-down-button">To the Moon!</button>
                     </form>
                 </div>
             </div>
@@ -84,5 +98,5 @@
     </section>
 
 </body>
-
+<script src="./assets/js/script.js"></script>
 </html>
