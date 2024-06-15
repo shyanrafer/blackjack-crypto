@@ -70,6 +70,7 @@ function getNewDeck() { // Gets the id of a new shuffled deck from the api
         .then(function (data) {
             currentDeck = data.deck_id;
             getEntireDeck(currentDeck);
+            console.log(currentDeck);
         });
     return;
 };
@@ -118,10 +119,10 @@ function calculateHandsValue(){ // Calculates the values of the player and deale
             dealerSum += 10;
             } else {
                 dealerSum += Number(currentDealerHand[i].value);
-            }
-        };
+            };
+    };
 
-        for (let i = 0; i < currentPlayerHand.length; i++) {
+    for (let i = 0; i < currentPlayerHand.length; i++) {
             if (currentPlayerHand[i].value == "ACE") {
                 playerSum += 11;
                 playerAces++;
@@ -129,30 +130,38 @@ function calculateHandsValue(){ // Calculates the values of the player and deale
                 playerSum += 10;
                 } else {
                     playerSum += Number(currentPlayerHand[i].value);
-                }
-            };
+        };
+    };
         
-        if (dealerSum > 21 && dealerAces >= 1){ // Checking for aces on the condition if the value is over 21 and changes the value of an ace from 11 to 1
-            for (let i = dealerAces; dealerSum < 21; i--){
-                console.log(dealerSum);
+    if (dealerSum > 21 && dealerAces > 0){ // Checking for aces on the condition if the value is over 21 and changes the value of an ace from 11 to 1
+            for (dealerAces; dealerSum > 21; dealerAces--){
+                if (dealerAces == 0){
+                    break;
+                }
                 dealerSum -= 10;
-                console.log(dealerSum);
             };
-        }
+    };
 
-            if (playerSum > 21 && playerAces >= 1){
-                console.log(playerSum);
-                for (let i = playerAces; playerSum < 21; i--){
+    if (playerSum > 21 && playerAces > 0){
+                for (playerAces; playerSum > 21; playerAces--){
+                    if (playerAces == 0){
+                        break;
+                    }
                     playerSum -= 10;
-                    console.log(playerSum);
                 };
-            }
+    };
+
     currentDealerHandValue = dealerSum;
     currentPlayerHandValue = playerSum;
+    if (currentPlayerHandValue == 21){
+        checkWinCondition();
+    };
+    console.log("Dealer hand: " + currentDealerHandValue);
+    console.log("Player hand: " + currentPlayerHandValue);
+
 };
 
 function renderCards(test) { // Renders the hands to the dealer and player card containers
-    calculateHandsValue ();
     playerCardsContainer.textContent = ''; // Emptying the container pre-rendering
     dealerCardsContainer.textContent = '';
     if (test != "last"){
@@ -177,7 +186,7 @@ function checkWinCondition(){ // Checks to see if there's a winner
     if (currentPlayerHandValue > 21){   
         return declareWinner("dealer");}
     else if (currentDealerHandValue === currentPlayerHandValue){
-        return declareWinner("tie");}
+        return declareWinner("tie");} // Maybe a resolve tie function here to test if dealer has less cards than player
     else if (currentDealerHandValue > currentPlayerHandValue && currentDealerHandValue <= 21){  
         return declareWinner("dealer");}
     else if (currentDealerHandValue < currentPlayerHandValue && currentPlayerHandValue <= 21){
@@ -185,6 +194,8 @@ function checkWinCondition(){ // Checks to see if there's a winner
     else if (currentPlayerHandValue > currentDealerHandValue){    
         return declareWinner("player");}
     else if (currentDealerHandValue > 21 && currentPlayerHandValue < 21){
+        return declareWinner("player");}
+    else if (currentPlayerHandValue == 21 && currentDealerHandValue < 21){
         return declareWinner("player");}
 };
 
@@ -225,8 +236,7 @@ function declareWinner(outcome){ // Declares winner and renders text to the play
         playerWins++;
         localStorage.setItem('playerWins', playerWins);
     }
-    playerActionContainer.innerHTML += `<p class="title">Play again?</p>`;
-    playerActionContainer.innerHTML += `<button class="button is-medium" onClick="window.location.reload();">Play another game</button>`;
+    playerActionContainer.innerHTML += `<button class="button is-medium" onClick="window.location.reload();">Play another game?</button>`;
     renderBalanceAndWins();
 };
 
@@ -234,20 +244,10 @@ function initialCardDraw(){ // Draws 2 cards for both player and dealer
     drawCards(2, "both");
 };
 
-function playerActionHandling(cards, betmulti){ // Handles what happens when the player presses the Dip or Moon button
-    drawCards(cards, "player");
-    calculateHandsValue ();
-    currentBet = (currentBet * betmulti);
-    renderCards();
-    renderBet();
-    if (currentPlayerHandValue > 21){
-        return declareWinner("playerBust");
-    }
-};
-
 function dealerActionHandling(){ // Handles what happens after the player finishes their play and they didn't bust
+    calculateHandsValue()
     let dealerHandEval = currentDealerHandValue;
-    while (dealerHandEval < 17){
+    while (dealerHandEval <= 17){
         drawCards(1, "dealer");
         calculateHandsValue();
         dealerHandEval = currentDealerHandValue;}
@@ -256,6 +256,19 @@ function dealerActionHandling(){ // Handles what happens after the player finish
         return declareWinner("dealerBust");
     }
     checkWinCondition();
+};
+
+function playerActionHandling(cards, betmulti){ // Handles what happens when the player presses the Dip or Moon button
+    drawCards(cards, "player");
+    calculateHandsValue();
+    currentBet = (currentBet * betmulti);
+    renderCards();
+    renderBet();
+    if (currentPlayerHandValue > 21){
+        return declareWinner("playerBust");
+    } else if (currentPlayerHand == 21){
+        return checkWinCondition();
+    }
 };
 
 getNewDeck();
@@ -271,8 +284,6 @@ playerActionForm.addEventListener('click', function(event) { // Listens for a cl
         playerActionHandling(1, 1);
     } else if (event.target.firstChild.data == "To the Moon!"){  // Draws one card, adds it to the players hand and doubles the current bet
         playerActionHandling(1, 2);
-    } else if (event.target.firstChild.data == "Play another game"){
-        location.reload();
     }
 });
 
@@ -281,6 +292,7 @@ betForm.addEventListener('click', function(event) { // Listens for a submit from
     currentBet = event.target.firstChild.data; // Sets the initial bet
     renderBet(event.target.firstChild.data);
     renderCards();
+    calculateHandsValue();
     if (currentPlayerHandValue == 21){
         declareWinner("playerBlackjack");
     };
