@@ -10,7 +10,7 @@ const blackJackForm = document.querySelector('#black-jack-form');
 const hitButton = document.querySelector('#hit-button');
 const standButton = document.querySelector('#stand-button');
 const doubleDownButton = document.querySelector('#double-down-button');
-let currentDeck = "";
+let currentDeck = ""; // Setting global variables
 let cardsDrawn = [];
 let entireDeck = [];
 let currentPlayerHand = [];
@@ -33,20 +33,21 @@ function getDataFromStorage() { // Checks for an existing deck in localStorage a
     }
     const storedBalance = localStorage.getItem('playerBalance');
     if (storedBalance !== null) {
-        playerBalance = storedBalance;
+        playerBalance = Number(storedBalance);
     } else { playerBalance = 100;
         localStorage.setItem('playerBalance', playerBalance);
     }
     return;
 };
 
-function renderBalanceAndWins(){
+function renderBalanceAndWins(){ // Renders the player balance in btc, shows the value in USD and the tracked wins from local storage
     let btcToUsd = 0;
     btcToUsd = playerBalance * btcValue;
+    btcToUsd = btcToUsd.toLocaleString("en-US", { style: "currency", currency: "USD" });
     balanceContainer.textContent = ''; // Emptying the container pre-rendering
     balanceContainer.innerHTML += `<p class="title">₿ Balance: ${playerBalance}</p>`;
-    balanceContainer.innerHTML += `<p class="title">Worth in USD: $${btcToUsd}</p>`;
-    balanceContainer.innerHTML += `<p class="title">You have won ${playerWins} times!</p>`;
+    balanceContainer.innerHTML += `<p class="title">Worth in USD: ${btcToUsd}</p>`;
+    balanceContainer.innerHTML += `<p class="title">You have won ${playerWins} times.</p>`;
 };
 
 function getEntireDeck(deck) { // Draws all 52 cards from the api using the currentDeck id
@@ -73,7 +74,7 @@ function getNewDeck() { // Gets the id of a new shuffled deck from the api
     return;
 };
 
-function getCryptoValues() { // Queries the api for the current value of BTC in USD, parses the resulting object into a number
+function getCryptoValues() { // Queries the api for the current value of BTC in USD, parses the resulting object into a number to put in local storage
     fetch("https://min-api.cryptocompare.com/data/price?fsym=BTC&tsyms=USD&api_key=6c594b19a9cd08287fb516a08202718b0b8bbd2af5347e04f4f9744f1d94864a", { cache: "reload" })
         .then(function (response) {
             return response.json();
@@ -96,24 +97,20 @@ function drawCards(numOfCards, targetHand) { // Draws a specified number of card
                 currentDealerHand.push(entireDeck.pop());
                 currentPlayerHand.push(entireDeck.pop());
             } else if (targetHand == "dealer") {
-                console.log(currentDealerHand);
-                console.log(entireDeck);
                 currentDealerHand.push(entireDeck.pop());
                 } else {
-                    console.log(currentPlayerHand);
-                    console.log(entireDeck);
                     currentPlayerHand.push(entireDeck.pop());
                 };
             };
         return;
 };
 
-function calculateHandsValue(){
+function calculateHandsValue(){ // Calculates the values of the player and dealer hands
     let dealerSum = 0;
     let dealerAces = 0;
     let playerSum = 0;
     let playerAces = 0;
-    for (let i = 0; i < currentDealerHand.length; i++) {
+    for (let i = 0; i < currentDealerHand.length; i++) { // Adding the values of the cards together, tracking aces and counting them as 11 and counting face cards as 10
         if (currentDealerHand[i].value == "ACE") {
             dealerSum += 11;
             dealerAces++;
@@ -135,100 +132,156 @@ function calculateHandsValue(){
                 }
             };
         
-        if (dealerSum > 21 && dealerAces > 0){
-            for (let i = dealerAces; dealerSum > 21; i--){
-                dealerSum - 10;
+        if (dealerSum > 21 && dealerAces >= 1){ // Checking for aces on the condition if the value is over 21 and changes the value of an ace from 11 to 1
+            for (let i = dealerAces; dealerSum < 21; i--){
+                console.log(dealerSum);
+                dealerSum -= 10;
+                console.log(dealerSum);
             };
         }
 
-            if (playerSum > 21 && playerAces > 0){
-                for (let i = playerAces; playerSum > 21; i--){
-                    playerSum - 10;
+            if (playerSum > 21 && playerAces >= 1){
+                console.log(playerSum);
+                for (let i = playerAces; playerSum < 21; i--){
+                    playerSum -= 10;
+                    console.log(playerSum);
                 };
             }
     currentDealerHandValue = dealerSum;
     currentPlayerHandValue = playerSum;
 };
 
-function renderCards() {
+function renderCards(test) { // Renders the hands to the dealer and player card containers
     calculateHandsValue ();
     playerCardsContainer.textContent = ''; // Emptying the container pre-rendering
     dealerCardsContainer.textContent = '';
-    //dealerCardsContainer.innerHTML += `<h2>Dealer Cards: ${currentDealerHandValue}</h2>`;
-    //playerCardsContainer.innerHTML += `<h2>Player Cards: ${currentPlayerHandValue}</h2>`;
-    //dealerCardsContainer.innerHTML += `<img src=https://deckofcardsapi.com/static/img/back.png>`;
-    for (let i = 0; i < currentDealerHand.length; i++) {
-        dealerCardsContainer.innerHTML += `<img src=${currentDealerHand[i].image}>`;
-    };
+    if (test != "last"){
+        dealerCardsContainer.innerHTML += `<img src=${currentDealerHand[0].image}>`;
+        dealerCardsContainer.innerHTML += `<img src=https://deckofcardsapi.com/static/img/back.png>`;
+        } else { for (let i = 0; i < currentDealerHand.length; i++) {
+            dealerCardsContainer.innerHTML += `<img src=${currentDealerHand[i].image}>`;
+        }
+    }
     for (let i = 0; i < currentPlayerHand.length; i++) {
         playerCardsContainer.innerHTML += `<img src=${currentPlayerHand[i].image}>`;
     };
 };
 
-function renderBet() {
+function renderBet() { // Renders the current bet to the bet container
     betContainer.textContent = ''; // Emptying the container pre-rendering
-    betContainer.innerHTML += `<p class="title">Current Bet: ${currentBet}</p>`;
+    betContainer.innerHTML += `<p class="title">Current Bet: ₿ ${currentBet}</p>`;
+    playerActionContainer.setAttribute("class", "card-content");
 };
 
-function checkWinCondition(){
-    if (currentPlayerHandValue > 21){
-    return alert("RUGGED!");}
+function checkWinCondition(){ // Checks to see if there's a winner
+    if (currentPlayerHandValue > 21){   
+        return declareWinner("dealer");}
     else if (currentDealerHandValue === currentPlayerHandValue){
-     return alert("It's a tie!");}
-     else if (currentDealerHandValue > currentPlayerHandValue && currentDealerHandValue <= 21){
-         return alert("You lose!");}
-     else if (currentPlayerHandValue > currentDealerHandValue){
-         playerWins+1;
-         localStorage.setItem('playerWins', playerWins);
-        return alert("You win!");}
+        return declareWinner("tie");}
+    else if (currentDealerHandValue > currentPlayerHandValue && currentDealerHandValue <= 21){  
+        return declareWinner("dealer");}
+    else if (currentDealerHandValue < currentPlayerHandValue && currentPlayerHandValue <= 21){
+        return declareWinner("player");}
+    else if (currentPlayerHandValue > currentDealerHandValue){    
+        return declareWinner("player");}
+    else if (currentDealerHandValue > 21 && currentPlayerHandValue < 21){
+        return declareWinner("player");}
 };
 
-function declareWinner(){
+function declareWinner(outcome){ // Declares winner and renders text to the player action container
+    playerActionContainer.textContent = ''; // Emptying the container pre-rendering
+    betContainer.innerHTML += `<h2>Dealer has ${currentDealerHandValue}</h2>`;
+    betContainer.innerHTML += `<h2>Player has ${currentPlayerHandValue}</h2>`;
+    renderCards("last");
+    if (outcome == "dealer"){
+        playerActionContainer.innerHTML += `<p class="title">You lose!</p>`;
+        playerBalance -= Number(currentBet);
+        localStorage.setItem('playerBalance', playerBalance);
+    } else if (outcome == "tie"){
+        playerActionContainer.innerHTML += `<p class="title">It's a tie!</p>`;
+    } else if (outcome == "player"){
+        playerActionContainer.innerHTML += `<p class="title">You win!</p>`;
+        if (currentPlayerHandValue == 21){playerBalance += Number(currentBet * 1.5);}
+        else {playerBalance += Number(currentBet);};
+        localStorage.setItem('playerBalance', playerBalance);
+        playerWins++;
+        localStorage.setItem('playerWins', playerWins);
+    } else if (outcome == "playerBust"){
+        playerActionContainer.innerHTML += `<p class="title">BUSTED! You got rugged!</p>`;
+        playerBalance -= Number(currentBet);
+        localStorage.setItem('playerBalance', playerBalance);
+    } else if (outcome == "dealerBust"){
+        playerActionContainer.innerHTML += `<p class="title">Dealer busted! Get those tendies!</p>`;
+        if (currentPlayerHandValue == 21){playerBalance += Number(currentBet * 1.5);}
+        else {playerBalance += Number(currentBet);};
+        localStorage.setItem('playerBalance', playerBalance);
+        playerWins++;
+        localStorage.setItem('playerWins', playerWins);
+    } else if (outcome == "playerBlackjack"){
+        playerActionContainer.innerHTML += `<p class="title">Blackjack!!!!</p>`;
+        if (currentPlayerHandValue == 21){playerBalance += Number(currentBet * 1.5);}
+        else {playerBalance += Number(currentBet);};
+        localStorage.setItem('playerBalance', playerBalance);
+        playerWins++;
+        localStorage.setItem('playerWins', playerWins);
+    }
+    playerActionContainer.innerHTML += `<p class="title">Play again?</p>`;
+    playerActionContainer.innerHTML += `<button class="button is-medium" onClick="window.location.reload();">Play another game</button>`;
+    renderBalanceAndWins();
 };
 
-function initialCardDraw(){
+function initialCardDraw(){ // Draws 2 cards for both player and dealer
     drawCards(2, "both");
 };
 
-function nextRound(){
+function playerActionHandling(cards, betmulti){ // Handles what happens when the player presses the Dip or Moon button
+    drawCards(cards, "player");
+    calculateHandsValue ();
+    currentBet = (currentBet * betmulti);
     renderCards();
-        while (currentDealerHandValue < 17)
-            {
-            drawCards(1, "dealer");
-            calculateHandsValue();
-            }
-    renderCards();    
-    checkWinCondition();
-    console.log(currentDealerHandValue);
-    console.log(currentPlayerHandValue);
+    renderBet();
+    if (currentPlayerHandValue > 21){
+        return declareWinner("playerBust");
+    }
 };
 
-function playNewGame(){
-    renderCards();
-}
+function dealerActionHandling(){ // Handles what happens after the player finishes their play and they didn't bust
+    let dealerHandEval = currentDealerHandValue;
+    while (dealerHandEval < 17){
+        drawCards(1, "dealer");
+        calculateHandsValue();
+        dealerHandEval = currentDealerHandValue;}
+    renderCards("last");
+    if (dealerHandEval > 21){
+        return declareWinner("dealerBust");
+    }
+    checkWinCondition();
+};
 
 getNewDeck();
-getCryptoValues();
+//getCryptoValues();
 getDataFromStorage();
 renderBalanceAndWins();
 
 playerActionForm.addEventListener('click', function(event) { // Listens for a click event on a button
     event.preventDefault(); // Stops the page from refreshing on submit
     if (event.target.firstChild.data == "Hodl"){
-        return nextRound();
+        return dealerActionHandling();
     } else if (event.target.firstChild.data == "Buy the Dip"){ // Draws one card and adds it to the players hand
-        drawCards(1, "player");
+        playerActionHandling(1, 1);
     } else if (event.target.firstChild.data == "To the Moon!"){  // Draws one card, adds it to the players hand and doubles the current bet
-        drawCards(1, "player");
-        currentBet * 2;
+        playerActionHandling(1, 2);
+    } else if (event.target.firstChild.data == "Play another game"){
+        location.reload();
     }
-    nextRound();
 });
 
 betForm.addEventListener('click', function(event) { // Listens for a submit from the betting form
     event.preventDefault(); // Stops the page from refreshing on submit
     currentBet = event.target.firstChild.data; // Sets the initial bet
-    console.log("Current bet is " + currentBet);
-    playNewGame();
     renderBet(event.target.firstChild.data);
+    renderCards();
+    if (currentPlayerHandValue == 21){
+        declareWinner("playerBlackjack");
+    };
 });
