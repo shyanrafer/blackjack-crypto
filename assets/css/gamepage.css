@@ -25,3 +25,7 @@ h2{
     color: white;
     font-weight: bold !important;
 }
+
+.player-action-container-hidden{
+    visibility: hidden;
+}
