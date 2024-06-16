@@ -18,6 +18,7 @@ let currentDealerHand = [];
 let currentPlayerHandValue = 0;
 let currentDealerHandValue = 0;
 let btcValue = 0;
+let btcValueLocal = "";
 let playerBalance = 0;
 let playerWins = 0;
 let currentBet = 0;
@@ -30,6 +31,10 @@ function getDataFromStorage() { // Checks for an existing deck in localStorage a
     const storedBTC = localStorage.getItem('currentBTCvalue');
     if (storedBTC !== null) {
         btcValue = storedBTC;
+    }
+    const storedBTCLocal = localStorage.getItem('currentBTCvalueLocal');
+    if (storedBTCLocal !== null) {
+        btcValueLocal = storedBTCLocal;
     }
     const storedBalance = localStorage.getItem('playerBalance');
     if (storedBalance !== null) {
@@ -45,6 +50,7 @@ function renderBalanceAndWins(){ // Renders the player balance in btc, shows the
     btcToUsd = playerBalance * btcValue;
     btcToUsd = btcToUsd.toLocaleString("en-US", { style: "currency", currency: "USD" });
     balanceContainer.textContent = ''; // Emptying the container pre-rendering
+    balanceContainer.innerHTML += `<p class="title">Current ₿ value: ${btcValueLocal}</p>`;
     balanceContainer.innerHTML += `<p class="title">₿ Balance: ${playerBalance}</p>`;
     balanceContainer.innerHTML += `<p class="title">Worth in USD: ${btcToUsd}</p>`;
     balanceContainer.innerHTML += `<p class="title">You have won ${playerWins} times.</p>`;
@@ -70,7 +76,6 @@ function getNewDeck() { // Gets the id of a new shuffled deck from the api
         .then(function (data) {
             currentDeck = data.deck_id;
             getEntireDeck(currentDeck);
-            console.log(currentDeck);
         });
     return;
 };
@@ -82,14 +87,11 @@ function getCryptoValues() { // Queries the api for the current value of BTC in 
         })
         .then(function (data) {
             btcValue = data.USD;
+            btcValueLocal = btcValue.toLocaleString("en-US", { style: "currency", currency: "USD" });
             localStorage.setItem('currentBTCvalue', btcValue);
+            localStorage.setItem('currentBTCvalueLocal', btcValueLocal);
         });
     return;
-};
-
-function prepNewGame() { // Wipes out any current hands to prepare for a new game
-    currentPlayerHand = [];
-    currentDealerHand = [];
 };
 
 function drawCards(numOfCards, targetHand) { // Draws a specified number of cards from the into the targets (player or dealer) hand
@@ -153,22 +155,21 @@ function calculateHandsValue(){ // Calculates the values of the player and deale
 
     currentDealerHandValue = dealerSum;
     currentPlayerHandValue = playerSum;
-    if (currentPlayerHandValue == 21){
+    if (currentPlayerHandValue == 21){ // Additional check for blackjack after a hands value calculation
         checkWinCondition();
     };
-    console.log("Dealer hand: " + currentDealerHandValue);
-    console.log("Player hand: " + currentPlayerHandValue);
-
 };
 
 function renderCards(test) { // Renders the hands to the dealer and player card containers
     playerCardsContainer.textContent = ''; // Emptying the container pre-rendering
     dealerCardsContainer.textContent = '';
-    if (test != "last"){
+    if (test !== "last"){
         dealerCardsContainer.innerHTML += `<img src=${currentDealerHand[0].image}>`;
         dealerCardsContainer.innerHTML += `<img src=https://deckofcardsapi.com/static/img/back.png>`;
+        console.log("Not last");
         } else { for (let i = 0; i < currentDealerHand.length; i++) {
             dealerCardsContainer.innerHTML += `<img src=${currentDealerHand[i].image}>`;
+            console.log("Last");
         }
     }
     for (let i = 0; i < currentPlayerHand.length; i++) {
@@ -184,26 +185,23 @@ function renderBet() { // Renders the current bet to the bet container
 
 function checkWinCondition(){ // Checks to see if there's a winner
     if (currentPlayerHandValue > 21){   
-        return declareWinner("dealer");}
+        return declareWinner("playerBust");}
+    else if (currentPlayerHandValue == 21 && currentDealerHandValue < 21){
+        return declareWinner("playerBlackjack");}
+    else if (currentDealerHandValue == 21 && currentPlayerHandValue < 21){
+        return declareWinner("dealerBlackjack");}
     else if (currentDealerHandValue === currentPlayerHandValue){
-        return declareWinner("tie");} // Maybe a resolve tie function here to test if dealer has less cards than player
+        return declareWinner("tie");} // Future function possibility: Test to see who has fewer cards to resolve a push
     else if (currentDealerHandValue > currentPlayerHandValue && currentDealerHandValue <= 21){  
         return declareWinner("dealer");}
     else if (currentDealerHandValue < currentPlayerHandValue && currentPlayerHandValue <= 21){
         return declareWinner("player");}
-    else if (currentPlayerHandValue > currentDealerHandValue){    
-        return declareWinner("player");}
     else if (currentDealerHandValue > 21 && currentPlayerHandValue < 21){
-        return declareWinner("player");}
-    else if (currentPlayerHandValue == 21 && currentDealerHandValue < 21){
         return declareWinner("player");}
 };
 
 function declareWinner(outcome){ // Declares winner and renders text to the player action container
-    playerActionContainer.textContent = ''; // Emptying the container pre-rendering
-    betContainer.innerHTML += `<h2>Dealer has ${currentDealerHandValue}</h2>`;
-    betContainer.innerHTML += `<h2>Player has ${currentPlayerHandValue}</h2>`;
-    renderCards("last");
+    playerActionContainer.textContent = ''; // Emptying the containers pre-rendering
     if (outcome == "dealer"){
         playerActionContainer.innerHTML += `<p class="title">You lose!</p>`;
         playerBalance -= Number(currentBet);
@@ -229,15 +227,23 @@ function declareWinner(outcome){ // Declares winner and renders text to the play
         playerWins++;
         localStorage.setItem('playerWins', playerWins);
     } else if (outcome == "playerBlackjack"){
-        playerActionContainer.innerHTML += `<p class="title">Blackjack!!!!</p>`;
+        playerActionContainer.innerHTML += `<p class="title">Blackjack!!!! WAGMI!</p>`;
         if (currentPlayerHandValue == 21){playerBalance += Number(currentBet * 1.5);}
         else {playerBalance += Number(currentBet);};
         localStorage.setItem('playerBalance', playerBalance);
         playerWins++;
         localStorage.setItem('playerWins', playerWins);
+    } else if (outcome == "dealerBlackjack"){
+        playerActionContainer.innerHTML += `<p class="title">Dealer has blackjack. That's pure FUD!!</p>`;
+        playerBalance -= Number(currentBet);
+        localStorage.setItem('playerBalance', playerBalance);
     }
     playerActionContainer.innerHTML += `<button class="button is-medium" onClick="window.location.reload();">Play another game?</button>`;
+    betContainer.textContent = '';
+    betContainer.innerHTML += `<h2>Dealer has ${currentDealerHandValue}</h2>`;
+    betContainer.innerHTML += `<h2>Player has ${currentPlayerHandValue}</h2>`;
     renderBalanceAndWins();
+    renderCards("last");
 };
 
 function initialCardDraw(){ // Draws 2 cards for both player and dealer
@@ -251,7 +257,6 @@ function dealerActionHandling(){ // Handles what happens after the player finish
         drawCards(1, "dealer");
         calculateHandsValue();
         dealerHandEval = currentDealerHandValue;}
-    renderCards("last");
     if (dealerHandEval > 21){
         return declareWinner("dealerBust");
     }
@@ -272,7 +277,7 @@ function playerActionHandling(cards, betmulti){ // Handles what happens when the
 };
 
 getNewDeck();
-//getCryptoValues();
+getCryptoValues();
 getDataFromStorage();
 renderBalanceAndWins();
 
@@ -285,6 +290,10 @@ playerActionForm.addEventListener('click', function(event) { // Listens for a cl
     } else if (event.target.firstChild.data == "To the Moon!"){  // Draws one card, adds it to the players hand and doubles the current bet
         playerActionHandling(1, 2);
     }
+    calculateHandsValue();
+    if (currentPlayerHandValue == 21){
+        declareWinner("playerBlackjack");
+    };
 });
 
 betForm.addEventListener('click', function(event) { // Listens for a submit from the betting form
