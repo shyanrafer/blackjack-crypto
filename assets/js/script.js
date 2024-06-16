@@ -23,7 +23,7 @@ let playerBalance = 0;
 let playerWins = 0;
 let currentBet = 0;
 
-function getDataFromStorage() { // Checks for an existing deck in localStorage and sets them to the working arrays if found
+function getDataFromStorage() { // Checks for existing data in localStorage and retrieves it for use
     const storedWins = localStorage.getItem('playerWins');
     if (storedWins !== null) {
         playerWins = storedWins;
@@ -94,7 +94,7 @@ function getCryptoValues() { // Queries the api for the current value of BTC in 
     return;
 };
 
-function drawCards(numOfCards, targetHand) { // Draws a specified number of cards from the into the targets (player or dealer) hand
+function drawCards(numOfCards, targetHand) { // Draws a specified number of cards from the deck into the targets (both, dealer or player) hand
         for (let i = 0; i < numOfCards; i++) {
             if (targetHand == "both") {
                 currentDealerHand.push(entireDeck.pop());
@@ -155,7 +155,7 @@ function calculateHandsValue(){ // Calculates the values of the player and deale
 
     currentDealerHandValue = dealerSum;
     currentPlayerHandValue = playerSum;
-    if (currentPlayerHandValue == 21){ // Additional check for blackjack after a hands value calculation
+    if (currentPlayerHandValue == 21){ // Additional check for player blackjack after a hands value calculation
         checkWinCondition();
     };
 };
@@ -166,10 +166,8 @@ function renderCards(test) { // Renders the hands to the dealer and player card 
     if (test !== "last"){
         dealerCardsContainer.innerHTML += `<img src=${currentDealerHand[0].image}>`;
         dealerCardsContainer.innerHTML += `<img src=https://deckofcardsapi.com/static/img/back.png>`;
-        console.log("Not last");
         } else { for (let i = 0; i < currentDealerHand.length; i++) {
             dealerCardsContainer.innerHTML += `<img src=${currentDealerHand[i].image}>`;
-            console.log("Last");
         }
     }
     for (let i = 0; i < currentPlayerHand.length; i++) {
@@ -250,7 +248,7 @@ function initialCardDraw(){ // Draws 2 cards for both player and dealer
     drawCards(2, "both");
 };
 
-function dealerActionHandling(){ // Handles what happens after the player finishes their play and they didn't bust
+function dealerActionHandling(){ // Handles what happens after the player finishes their play and they didn't bust or blackjack
     calculateHandsValue()
     let dealerHandEval = currentDealerHandValue;
     while (dealerHandEval <= 17){
@@ -283,7 +281,7 @@ renderBalanceAndWins();
 
 playerActionForm.addEventListener('click', function(event) { // Listens for a click event on a button
     event.preventDefault(); // Stops the page from refreshing on submit
-    if (event.target.firstChild.data == "Hodl"){
+    if (event.target.firstChild.data == "Hodl"){ // Ends the players turn and runs the dealer action function
         return dealerActionHandling();
     } else if (event.target.firstChild.data == "Buy the Dip"){ // Draws one card and adds it to the players hand
         playerActionHandling(1, 1);
