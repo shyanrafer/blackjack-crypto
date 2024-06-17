@@ -15,6 +15,7 @@
     <div id="play-submit-div">
       <card>
         <h2>Feeling lucky?</h2>
+        <!-- added a simple way to go from landing to gamepage -->
         <a href="./gamepage.html"><button id="submit-play-btn" class="shimmer">Test your fate</button></a>
       </card>
     </div>
@@ -22,14 +23,17 @@
 
   <div id="info-form-container">
     <button id="info-button">Click me for info</button>
-    
+    <!-- modal -->
+    <!-- gave it two classes: Invisible and visible -->
     <div id="form-div" class="invisible visible">
+      <!-- JavaScript was used to make the modal dynamic - upon a click event the class visible or invisible is placed on the modal and then subsequent styling is applied -->
       <form id="info-modal">
         <h2>Welcome to ₿lackjack Crypto!</h2>
         <br>
         <p>Thank you for stopping by to play a couple hands. Here are some rules:</p>
         <br> 
         <ul>
+          <!-- simple rules list -->
           <li>Blackjack pits player vs. dealer using one or more decks</li>
           <li>Card values: Numbered as given value, face cards as 10, ace as 1 or 11</li>
           <li>Objective: Beat the dealer by getting Blackjack (21), having a higher card count than the dealer without exceeding 21, or the dealer busting</li>
