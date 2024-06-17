@@ -72,7 +72,8 @@ button a {
   justify-content: center;
   align-items: center;
 }
-  
+  /* providing a z-index mitigatdd a bug associated with hovering over the "Test your fate button" */
+  /* without assinging z-index parameters, the modal would essentially cover the button even if invisible */
 #info-modal {
   position: fixed;
   top: 50%;
@@ -92,6 +93,7 @@ button:hover {
   cursor: pointer;
 }
 
+/* fun effect sourced from https://www.codeguage.com/blog/shimmer-effect-html-css*/
 .shimmer {
   display: inline-block;
   background: linear-gradient(
@@ -114,6 +116,7 @@ button:hover {
   }
 }
 
+/* classes for modal visibility */
 .visible {
   opacity: 1;
   max-height: 500px;
